@@ -32,7 +32,6 @@ type Response struct {
 type Item struct {
 	ResourceID int64 `json:"resourceID"`
 	Count      int64 `json:"count"`
-	Ctime      int64 `json:"ctime"`
 }
 
 var dbAddr string
@@ -73,7 +72,7 @@ func getPrasieCount(w http.ResponseWriter, req *http.Request) {
 	}
 	defer db.Close()
 
-	sql := fmt.Sprintf("select count,ctime from praise_count where resource_id = %d", resourceID)
+	sql := fmt.Sprintf("select count,ctime from praise_count where resource_id = %d limit 1", resourceID)
 	rows, sqlerr := db.Query(sql)
 	if sqlerr != nil {
 		returnErrMsg(w, -1, fmt.Sprintf("%v", sqlerr))
@@ -86,7 +85,8 @@ func getPrasieCount(w http.ResponseWriter, req *http.Request) {
 	if rows.Next() {
 		rows.Scan(&count, &ctime)
 	}
-	res.Data = &Item{ResourceID: resourceID, Count: count, Ctime: ctime}
+
+	res.Data = &Item{ResourceID: resourceID, Count: count}
 
 	retBytes, _ := json.Marshal(res)
 
@@ -114,7 +114,7 @@ func setPrasieCount(w http.ResponseWriter, req *http.Request) {
 		returnErrMsg(w, -1, fmt.Sprintf("%v", err))
 		return
 	}
-	retBytes, _ := json.Marshal(Response{Errno: 0})
+	retBytes, _ := json.Marshal(Response{Errno: 0, Data: &Item{}})
 	io.WriteString(w, string(retBytes))
 
 }
