@@ -175,7 +175,7 @@ func CleanCache(resourceID int64) error {
 
 //从redis_master中获取点赞数
 func getFromCache(resourceID int64) (int64, error) {
-	conn, err := redis.Dial("tcp", "redis_master:6379")
+	conn, err := redis.Dial("tcp", "redis_slave_1:6379")
 	if err != nil {
 		return 0, err
 	}
