@@ -1,0 +1,58 @@
+version: '2.0'
+services:
+   webapp:
+        image: golang
+        container_name: webapp
+        ports:
+            - 8080:80
+        networks:
+            - front
+        volumes:
+            - ./go/webapp:/go/src/webapp
+            - ./sh:/sh
+        command: sh /sh/start.sh 
+   mysql:
+        image: mysql
+        container_name: mysql
+        ports:
+            - 3306:3306
+        networks:
+            - front
+        environment:
+            "MYSQL_ROOT_PASSWORD": "123456"
+   redis_master:
+        image: redis
+        container_name: redis_master
+        networks:
+            - front
+        ports:
+            - 7002:6379
+        restart: always
+   redis_slave_1:
+        image: redis
+        ports:
+            - 7003:6379
+        restart: always
+        container_name: redis_slave_1
+        command: redis-server --slaveof redis_master 6379
+        networks:
+            - front
+        image: redis
+        restart: always
+   redis_slave_2:
+        image: redis
+        ports:
+            - 7004:6379
+        restart: always
+        container_name: redis_slave_2
+        networks:
+            - front
+        image: redis
+        restart: always
+        command: redis-server --slaveof redis_master 6379
+ 
+   
+networks:
+    front:
+        driver: bridge
+    

@@ -1,2 +1,1 @@
-go get -u github.com/go-sql-driver/mysql  &&  go run /go/src/webapp/main.go
-
+go get -u github.com/go-sql-driver/mysql && go get -u github.com/garyburd/redigo/redis  &&  go run /go/src/webapp/main.go
