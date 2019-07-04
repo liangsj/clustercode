@@ -10,9 +10,13 @@ import (
 	"net/http"
 	"strconv"
 
+	rds "webapp/module/redis"
+
 	"github.com/garyburd/redigo/redis"
 	_ "github.com/go-sql-driver/mysql"
 )
+
+var defaultSentinel rds.Sentinel = rds.DefaultSentinel
 
 //c/s协议返回的json的结构体
 // {
@@ -67,7 +71,6 @@ func getPrasieCount(w http.ResponseWriter, req *http.Request) {
 		returnErrMsg(w, -1, fmt.Sprintf("%v", err))
 		return
 	}
-
 	praiseCount, err := getFromCache(resourceID)
 	if err != nil && err != redis.ErrNil {
 		returnErrMsg(w, -1, fmt.Sprintf("%v", err))
@@ -149,7 +152,7 @@ func returnErrMsg(w http.ResponseWriter, errno int, errmsg string) {
 
 //将点赞数放入redis_master缓存中
 func setToCache(resourceID int64, praiseCount int64) error {
-	conn, err := redis.Dial("tcp", "redis_master:6379")
+	conn, err := defaultSentinel.GetRedisConn()
 	if err != nil {
 		return err
 	}
@@ -162,7 +165,7 @@ func setToCache(resourceID int64, praiseCount int64) error {
 
 //清除缓存数据
 func CleanCache(resourceID int64) error {
-	conn, err := redis.Dial("tcp", "redis_master:6379")
+	conn, err := defaultSentinel.GetRedisConn()
 	if err != nil {
 		return err
 	}

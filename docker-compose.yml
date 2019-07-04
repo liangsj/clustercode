@@ -55,7 +55,7 @@ services:
         ports:
             - 7006:26379
         restart: always
-        container_name: redis_sentinel_1
+        container_name: sentinel_1
         networks:
             - front
         image: redis
@@ -70,7 +70,7 @@ services:
         ports:
             - 7005:26379
         restart: always
-        container_name: redis_sentinel_2
+        container_name: sentinel_2
         networks:
             - front
         image: redis
