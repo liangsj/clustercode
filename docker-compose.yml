@@ -50,7 +50,34 @@ services:
         image: redis
         restart: always
         command: redis-server --slaveof redis_master 6379
- 
+   sentinel_1:
+        image: redis
+        ports:
+            - 7006:26379
+        restart: always
+        container_name: redis_sentinel_1
+        networks:
+            - front
+        image: redis
+        volumes:
+            - ./conf:/data/conf
+        restart: always
+
+        command: redis-server /data/conf/sentinel.conf --sentinel  
+
+   sentinel_2:
+        image: redis
+        ports:
+            - 7005:26379
+        restart: always
+        container_name: redis_sentinel_2
+        networks:
+            - front
+        image: redis
+        volumes:
+            - ./conf:/data/conf
+        restart: always
+        command: redis-server /data/conf/sentinel.conf --sentinel
    
 networks:
     front:
