@@ -78,7 +78,38 @@ services:
             - ./conf:/data/conf
         restart: always
         command: redis-server /data/conf/sentinel.conf --sentinel
-   
+   nginx:
+        image: nginx
+        container_name: nginx
+        volumes:
+            - ./conf/nginx/conf.d:/etc/nginx/conf.d
+        ports:
+            - 8220:8220
+            - 8280:80
+        networks:
+            - front
+   webapp_1:
+        image: golang
+        container_name: webapp_1
+        ports:
+            - 8081:80
+        networks:
+            - front
+        volumes:
+            - ./go/webapp:/go/src/webapp
+            - ./sh:/sh
+        command: sh /sh/start.sh 
+   webapp_2:
+        image: golang
+        container_name: webapp_2
+        ports:
+            - 8082:80
+        networks:
+            - front
+        volumes:
+            - ./go/webapp:/go/src/webapp
+            - ./sh:/sh
+        command: sh /sh/start.sh   
 networks:
     front:
         driver: bridge
